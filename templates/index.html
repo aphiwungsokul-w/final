@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockNews AI Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#151722',
+                        card: '#1e2130',
+                        border: '#2a2e40',
+                        primary: '#10b981', // Emerald 500
+                        destructive: '#ef4444' // Red 500
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', 'Sarabun', sans-serif; background-color: #151722; color: #f8fafc; }
+    </style>
+</head>
+<body class="min-h-screen bg-background">
+
+    <nav class="border-b border-border bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <span class="text-xl font-bold tracking-tight">StockNews AI</span>
+            </div>
+            <div class="hidden md:flex gap-6 font-medium text-sm">
+                <a href="/" class="text-white">Dashboard</a>
+                <a href="/news" class="text-gray-400 hover:text-white transition-colors">News</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div class="mb-8" data-aos="fade-down">
+            <h1 class="text-2xl font-bold tracking-tight mb-2">Stock Prediction Dashboard</h1>
+            <p class="text-sm text-gray-400">พยากรณ์ราคาเปิดหุ้นไทยจากการวิเคราะห์ Sentiment ของข่าว ด้วย LSTM & Random Forest</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for stock in stocks %}
+            <a href="/stock/{{ stock.symbol }}" class="block rounded-xl border border-border bg-card text-card-foreground shadow-sm p-6 flex flex-col justify-between hover:border-gray-400 transition-colors duration-300" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold">{{ stock.symbol }}</h2>
+                        <p class="text-xs text-gray-400">{{ stock.name }}</p>
+                    </div>
+                    <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 {{ 'border-primary/20 bg-primary/10 text-primary' if stock.is_positive else 'border-destructive/20 bg-destructive/10 text-destructive' }}">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' if stock.is_positive else 'M13 17h8m0 0V9m0 8l-8-8-4 4-6-6' }}"></path></svg>
+                        {{ stock.sentiment }}
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-end mt-4">
+                    <div>
+                        <div class="text-3xl font-bold tracking-tight">฿{{ stock.price }}</div>
+                        <div class="text-sm font-medium mt-1 {{ 'text-primary' if stock.is_positive else 'text-destructive' }}">
+                            {{ stock.change }}
+                        </div>
+                    </div>
+                    <div class="w-24 h-12">
+                        <canvas class="sparkline w-full h-full"
+                            data-prices="{{ stock.history_json }}"
+                            data-positive="{{ 'true' if stock.is_positive else 'false' }}">
+                        </canvas>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+    </main>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 600,
+            once: true,
+            easing: 'ease-out-cubic'
+        });
+    </script>
+</html>    
+    <script>
+        // ======= Sparkline Renderer =======
+        function drawSparkline(canvas) {
+            const prices = JSON.parse(canvas.dataset.prices || '[]');
+            const isPositive = canvas.dataset.positive === 'true';
+            const color = isPositive ? '#10b981' : '#ef4444';
+
+            const w = canvas.offsetWidth || 96;
+            const h = canvas.offsetHeight || 48;
+            canvas.width  = w * window.devicePixelRatio;
+            canvas.height = h * window.devicePixelRatio;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            if (prices.length < 2) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, h / 2);
+                ctx.lineTo(w, h / 2);
+                ctx.stroke();
+                return;
+            }
+
+            const pad = { t: 4, b: 4, l: 2, r: 2 };
+            const dw = w - pad.l - pad.r;
+            const dh = h - pad.t - pad.b;
+            const minP = Math.min(...prices);
+            const maxP = Math.max(...prices);
+            const range = maxP - minP || 1;
+            const toX = (i) => pad.l + (i / (prices.length - 1)) * dw;
+            const toY = (p) => pad.t + (1 - (p - minP) / range) * dh;
+
+            // Gradient fill
+            const grad = ctx.createLinearGradient(0, pad.t, 0, h);
+            grad.addColorStop(0, isPositive ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(prices[0]));
+            for (let i = 1; i < prices.length; i++) ctx.lineTo(toX(i), toY(prices[i]));
+            ctx.lineTo(toX(prices.length - 1), h);
+            ctx.lineTo(toX(0), h);
+            ctx.closePath();
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Line
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(prices[0]));
+            for (let i = 1; i < prices.length; i++) ctx.lineTo(toX(i), toY(prices[i]));
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.lineCap  = 'round';
+            ctx.stroke();
+
+            // Dot at last point
+            ctx.beginPath();
+            ctx.arc(toX(prices.length - 1), toY(prices[prices.length - 1]), 3, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        window.addEventListener('load', () => {
+            document.querySelectorAll('canvas.sparkline').forEach(drawSparkline);
+        });
+    </script>
+</body>
+</html>

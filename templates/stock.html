@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ symbol }} - StockNews AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: {
+                background: '#151722', card: '#1e2130',
+                border: '#2a2e40', primary: '#10b981', destructive: '#ef4444'
+            }}}
+        }
+    </script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', 'Sarabun', sans-serif; background-color: #151722; color: #f8fafc; }
+        .confidence-bar { transition: width 0.8s ease; }
+    </style>
+</head>
+<body class="min-h-screen bg-background pb-10">
+
+    <nav class="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <span class="text-xl font-bold tracking-tight">StockNews AI</span>
+            </div>
+            <div class="hidden md:flex gap-6 font-medium text-sm">
+                <a href="/" class="text-gray-400 hover:text-white transition-colors">Dashboard</a>
+                <a href="/news" class="text-gray-400 hover:text-white transition-colors">News</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Header -->
+        <div class="flex justify-between items-start mb-8" data-aos="fade-down">
+            <div class="flex items-center gap-4">
+                <a href="/" class="p-2 hover:bg-card rounded-full transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                </a>
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">{{ symbol }}</h1>
+                    <p class="text-sm text-gray-400">{{ name }}</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-3xl font-bold tracking-tight">฿{{ stock_info.price }}</div>
+                <div class="text-sm font-medium mt-1 {{ 'text-primary' if stock_info.is_positive else 'text-destructive' }}">
+                    {{ stock_info.change }}
+                </div>
+                <div class="text-xs text-gray-500 mt-1">อัปเดต: {{ updated_at[:16] if updated_at != 'ยังไม่มีข้อมูล' else updated_at }}</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+            <!-- Chart -->
+            <div class="lg:col-span-2 bg-card border border-border rounded-xl p-4" data-aos="fade-right">
+                <h3 class="text-sm font-semibold text-gray-300 mb-3">ราคาย้อนหลัง 30 วัน</h3>
+                <div class="h-[340px] w-full relative">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Prediction Panel -->
+            <div class="space-y-4" data-aos="fade-left">
+
+                <!-- Model toggle -->
+                <div class="bg-card border border-border rounded-xl p-4">
+                    <h3 class="text-center font-semibold mb-3 text-gray-200 text-sm">เลือกโมเดล</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-lstm" onclick="switchModel('lstm')"
+                            class="bg-primary text-white text-xs font-semibold py-2 px-3 rounded-md transition-all hover:bg-emerald-600">
+                            LSTM
+                        </button>
+                        <button id="btn-rf" onclick="switchModel('rf')"
+                            class="bg-[#2a2e40] text-gray-300 text-xs font-semibold py-2 px-3 rounded-md transition-all hover:bg-gray-600">
+                            Random Forest
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prediction result card -->
+                <div class="bg-card border border-border rounded-xl p-5 relative overflow-hidden" id="predict-card">
+                    <!-- Left accent bar (สีเปลี่ยนตาม signal) -->
+                    <div class="absolute top-0 left-0 bottom-0 w-1 rounded-l-xl" id="accent-bar"
+                         style="background: {{ '#10b981' if lstm.signal == 1 else '#ef4444' }}"></div>
+
+                    <div class="pl-3">
+                        <h3 class="font-medium text-gray-300 mb-3 text-sm">
+                            ผลทำนาย Open วันถัดไป
+                            <span id="model-badge" class="ml-2 text-xs bg-emerald-900/40 text-primary px-2 py-0.5 rounded-full">LSTM</span>
+                        </h3>
+
+                        <!-- Signal -->
+                        <div class="flex items-center gap-3 mb-4">
+                            <div id="signal-icon" class="w-10 h-10 rounded-full flex items-center justify-center {{ 'bg-emerald-900/40' if lstm.signal == 1 else 'bg-red-900/40' }}">
+                                <svg class="w-5 h-5 {{ 'text-primary' if lstm.signal == 1 else 'text-destructive' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    {% if lstm.signal == 1 %}
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                    {% else %}
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                                    {% endif %}
+                                </svg>
+                            </div>
+                            <div>
+                                <div id="signal-text" class="text-xl font-bold {{ 'text-primary' if lstm.signal == 1 else 'text-destructive' }}">
+                                    {{ lstm.label }}
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    ความน่าจะเป็นขึ้น: <span id="prob-val" class="text-white font-semibold">{{ lstm.prob }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Confidence bar -->
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                <span>ความเชื่อมั่น</span>
+                                <span id="conf-val" class="text-white font-semibold">{{ lstm.confidence }}</span>
+                            </div>
+                            <div class="h-1.5 bg-[#2a2e40] rounded-full overflow-hidden">
+                                <div id="conf-bar" class="h-full rounded-full confidence-bar {{ 'bg-primary' if lstm.signal == 1 else 'bg-destructive' }}"
+                                     style="width: {{ lstm.confidence }}"></div>
+                            </div>
+                        </div>
+
+                        <!-- Recommended badge -->
+                        {% if recommended_model %}
+                        <div class="pt-3 border-t border-gray-700 text-xs text-gray-400">
+                            แนะนำ: <span class="text-yellow-400 font-semibold">{{ recommended_model }}</span>
+                            → <span class="{{ 'text-primary' if recommended_label == 'Up' else 'text-destructive' }} font-semibold">
+                                {{ recommended_label }}
+                            </span>
+                            ({{ recommended_conf }})
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- News -->
+        <div class="bg-card border border-border rounded-xl p-6" data-aos="fade-up">
+            <h2 class="text-xl font-bold mb-4">ข่าว {{ symbol }} ล่าสุด</h2>
+            <div class="space-y-4">
+                {% for news in news_items %}
+                <a href="{{ news.link }}" target="_blank"
+                   class="block pb-4 border-b border-gray-800 last:border-0 hover:opacity-75 transition-opacity">
+                    <h3 class="font-semibold text-gray-100 mb-1 text-sm">{{ news.headline }}</h3>
+                    <p class="text-xs text-gray-500">{{ news.source }} &bull; {{ news.date }}</p>
+                </a>
+                {% endfor %}
+                {% if not news_items %}
+                <p class="text-gray-500 text-sm">ไม่พบข่าวล่าสุด</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 600, once: true });
+
+        // ── ข้อมูลโมเดลจาก Jinja2 ────────────────────────────
+        const modelData = {
+            lstm: {
+                signal:     {{ lstm.signal if lstm.signal is not none else 'null' }},
+                label:      '{{ lstm.label }}',
+                prob:       '{{ lstm.prob }}',
+                confidence: '{{ lstm.confidence }}',
+            },
+            rf: {
+                signal:     {{ rf.signal if rf.signal is not none else 'null' }},
+                label:      '{{ rf.label }}',
+                prob:       '{{ rf.prob }}',
+                confidence: '{{ rf.confidence }}',
+            },
+        };
+        let activeModel = 'lstm';
+
+        function switchModel(mtype) {
+            activeModel = mtype;
+            const d = modelData[mtype];
+
+            document.getElementById('btn-lstm').className =
+                mtype === 'lstm'
+                    ? 'bg-primary text-white text-xs font-semibold py-2 px-3 rounded-md transition-all hover:bg-emerald-600'
+                    : 'bg-[#2a2e40] text-gray-300 text-xs font-semibold py-2 px-3 rounded-md transition-all hover:bg-gray-600';
+            document.getElementById('btn-rf').className =
+                mtype === 'rf'
+                    ? 'bg-primary text-white text-xs font-semibold py-2 px-3 rounded-md transition-all hover:bg-emerald-600'
+                    : 'bg-[#2a2e40] text-gray-300 text-xs font-semibold py-2 px-3 rounded-md transition-all hover:bg-gray-600';
+
+            document.getElementById('model-badge').textContent = mtype === 'lstm' ? 'LSTM' : 'Random Forest';
+
+            const isUp = d.signal === 1;
+            const color = isUp ? '#10b981' : '#ef4444';
+            const textClass = isUp ? 'text-primary' : 'text-destructive';
+            const bgClass   = isUp ? 'bg-emerald-900/40' : 'bg-red-900/40';
+
+            document.getElementById('accent-bar').style.background = color;
+            document.getElementById('signal-text').textContent  = d.label || '-';
+            document.getElementById('signal-text').className    = `text-xl font-bold ${textClass}`;
+            document.getElementById('prob-val').textContent     = d.prob;
+            document.getElementById('conf-val').textContent     = d.confidence;
+            document.getElementById('conf-bar').style.width     = d.confidence;
+            document.getElementById('conf-bar').className =
+                `h-full rounded-full confidence-bar ${isUp ? 'bg-primary' : 'bg-destructive'}`;
+        }
+
+        // ── Price Chart ────────────────────────────────────────
+        const priceHistory = {{ price_history_json|safe }};
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels:   priceHistory.map(d => d.date),
+                datasets: [{
+                    label:           'ราคาปิด (฿)',
+                    data:            priceHistory.map(d => d.close),
+                    borderColor:     '#818cf8',
+                    backgroundColor: 'rgba(129,140,248,0.08)',
+                    tension:         0.4,
+                    borderWidth:     2,
+                    pointRadius:     2,
+                    fill:            true,
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#9ca3af', usePointStyle: true, boxWidth: 6 } }
+                },
+                scales: {
+                    x: { grid: { color: '#2a2e40' }, ticks: { color: '#9ca3af', font: { size: 9 }, maxRotation: 45 } },
+                    y: { grid: { color: '#2a2e40', borderDash: [4,4] }, ticks: { color: '#9ca3af', font: { size: 10 } } }
+                },
+                interaction: { intersect: false, mode: 'index' }
+            }
+        });
+    </script>
+</body>
+</html>

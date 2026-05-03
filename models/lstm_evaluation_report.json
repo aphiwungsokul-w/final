@@ -1,0 +1,127 @@
+[
+  {
+    "stock": "PTT",
+    "n_test": 60,
+    "accuracy": 0.5,
+    "f1_score": 0.375,
+    "auc_roc": 0.4579,
+    "precision_up": 0.3333,
+    "recall_up": 0.4286,
+    "confusion_matrix": [
+      [
+        21,
+        18
+      ],
+      [
+        12,
+        9
+      ]
+    ],
+    "best_epoch": 5,
+    "total_epochs": 45,
+    "train_acc": 0.5761,
+    "val_acc": 0.5424,
+    "overfit_gap": 0.0337,
+    "pca_n_comp": 73.0
+  },
+  {
+    "stock": "AOT",
+    "n_test": 55,
+    "accuracy": 0.5273,
+    "f1_score": 0.5357,
+    "auc_roc": 0.5645,
+    "precision_up": 0.4688,
+    "recall_up": 0.625,
+    "confusion_matrix": [
+      [
+        14,
+        17
+      ],
+      [
+        9,
+        15
+      ]
+    ],
+    "best_epoch": 1,
+    "total_epochs": 41,
+    "train_acc": 0.5296,
+    "val_acc": 0.3333,
+    "overfit_gap": 0.1963,
+    "pca_n_comp": 69.0
+  },
+  {
+    "stock": "DELTA",
+    "n_test": 57,
+    "accuracy": 0.4561,
+    "f1_score": 0.4746,
+    "auc_roc": 0.4903,
+    "precision_up": 0.6667,
+    "recall_up": 0.3684,
+    "confusion_matrix": [
+      [
+        12,
+        7
+      ],
+      [
+        24,
+        14
+      ]
+    ],
+    "best_epoch": 38,
+    "total_epochs": 78,
+    "train_acc": 0.6475,
+    "val_acc": 0.5357,
+    "overfit_gap": 0.1118,
+    "pca_n_comp": 67.0
+  },
+  {
+    "stock": "ADVANC",
+    "n_test": 55,
+    "accuracy": 0.5636,
+    "f1_score": 0.6757,
+    "auc_roc": 0.5847,
+    "precision_up": 0.5814,
+    "recall_up": 0.8065,
+    "confusion_matrix": [
+      [
+        6,
+        18
+      ],
+      [
+        6,
+        25
+      ]
+    ],
+    "best_epoch": 1,
+    "total_epochs": 41,
+    "train_acc": 0.5582,
+    "val_acc": 0.4528,
+    "overfit_gap": 0.1054,
+    "pca_n_comp": 66.0
+  },
+  {
+    "stock": "SCB",
+    "n_test": 53,
+    "accuracy": 0.5094,
+    "f1_score": 0.5806,
+    "auc_roc": 0.5171,
+    "precision_up": 0.4865,
+    "recall_up": 0.72,
+    "confusion_matrix": [
+      [
+        9,
+        19
+      ],
+      [
+        7,
+        18
+      ]
+    ],
+    "best_epoch": 1,
+    "total_epochs": 41,
+    "train_acc": 0.4689,
+    "val_acc": 0.5098,
+    "overfit_gap": -0.0409,
+    "pca_n_comp": 65.0
+  }
+]

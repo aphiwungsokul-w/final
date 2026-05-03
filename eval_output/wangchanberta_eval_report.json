@@ -1,0 +1,156 @@
+{
+  "model": "airesearch/wangchanberta-base-att-spm-uncased",
+  "data_file": "final_5year_dataset.csv",
+  "n_samples": 1838,
+  "embed_dim": 768,
+  "score_card": {
+    "overall_score": 30.0,
+    "grade": "D",
+    "breakdown": {
+      "separability_index": 12.0,
+      "linear_probe_auc": 1.2,
+      "silhouette": 12.5,
+      "anisotropy_penalty": 4.2
+    },
+    "interpretation": "embedding ไม่ช่วยงานนี้ — พิจารณา model ภาษาอื่น"
+  },
+  "global_quality": {
+    "intra_l2_down": 19.6736,
+    "intra_l2_up": 20.1025,
+    "inter_l2": 19.1683,
+    "fisher_ratio": 0.9638,
+    "cosine_intra_down": 0.7277,
+    "cosine_intra_up": 0.7299,
+    "cosine_inter": 0.7224,
+    "anisotropy": 0.7223,
+    "n_down": 930,
+    "n_up": 908
+  },
+  "global_separability": {
+    "logreg_acc": 0.5076,
+    "logreg_acc_std": 0.0149,
+    "logreg_auc": 0.5177,
+    "knn_acc": 0.5027,
+    "silhouette": 0.0,
+    "pca_components": 50,
+    "pca_variance_explained": 0.7848
+  },
+  "per_stock_quality": {
+    "PTT": {
+      "intra_l2_down": 20.261,
+      "intra_l2_up": 20.0502,
+      "inter_l2": 20.2056,
+      "fisher_ratio": 1.0025,
+      "cosine_intra_down": 0.7214,
+      "cosine_intra_up": 0.7272,
+      "cosine_inter": 0.7249,
+      "anisotropy": 0.722,
+      "n_down": 245,
+      "n_up": 151
+    },
+    "AOT": {
+      "intra_l2_down": 19.1717,
+      "intra_l2_up": 19.0919,
+      "inter_l2": 19.7171,
+      "fisher_ratio": 1.0306,
+      "cosine_intra_down": 0.7331,
+      "cosine_intra_up": 0.7434,
+      "cosine_inter": 0.7372,
+      "anisotropy": 0.737,
+      "n_down": 178,
+      "n_up": 185
+    },
+    "DELTA": {
+      "intra_l2_down": 18.1587,
+      "intra_l2_up": 17.3434,
+      "inter_l2": 18.0302,
+      "fisher_ratio": 1.0157,
+      "cosine_intra_down": 0.7598,
+      "cosine_intra_up": 0.7795,
+      "cosine_inter": 0.7755,
+      "anisotropy": 0.7704,
+      "n_down": 149,
+      "n_up": 226
+    },
+    "ADVANC": {
+      "intra_l2_down": 19.894,
+      "intra_l2_up": 19.2501,
+      "inter_l2": 19.5364,
+      "fisher_ratio": 0.9982,
+      "cosine_intra_down": 0.7309,
+      "cosine_intra_up": 0.7371,
+      "cosine_inter": 0.7308,
+      "anisotropy": 0.7328,
+      "n_down": 171,
+      "n_up": 187
+    },
+    "SCB": {
+      "intra_l2_down": 18.2356,
+      "intra_l2_up": 19.9393,
+      "inter_l2": 19.3226,
+      "fisher_ratio": 1.0123,
+      "cosine_intra_down": 0.7614,
+      "cosine_intra_up": 0.7007,
+      "cosine_inter": 0.7283,
+      "anisotropy": 0.7317,
+      "n_down": 187,
+      "n_up": 159
+    }
+  },
+  "per_stock_separability": {
+    "PTT": {
+      "logreg_acc": 0.4747,
+      "logreg_acc_std": 0.0294,
+      "logreg_auc": 0.469,
+      "knn_acc": 0.5832,
+      "silhouette": -0.0001,
+      "pca_components": 50,
+      "pca_variance_explained": 0.8229
+    },
+    "AOT": {
+      "logreg_acc": 0.5207,
+      "logreg_acc_std": 0.054,
+      "logreg_auc": 0.5435,
+      "knn_acc": 0.4709,
+      "silhouette": -0.0004,
+      "pca_components": 50,
+      "pca_variance_explained": 0.8323
+    },
+    "DELTA": {
+      "logreg_acc": 0.56,
+      "logreg_acc_std": 0.0438,
+      "logreg_auc": 0.5464,
+      "knn_acc": 0.5147,
+      "silhouette": 0.0045,
+      "pca_components": 50,
+      "pca_variance_explained": 0.8435
+    },
+    "ADVANC": {
+      "logreg_acc": 0.4637,
+      "logreg_acc_std": 0.0248,
+      "logreg_auc": 0.4554,
+      "knn_acc": 0.4888,
+      "silhouette": -0.0001,
+      "pca_components": 50,
+      "pca_variance_explained": 0.84
+    },
+    "SCB": {
+      "logreg_acc": 0.549,
+      "logreg_acc_std": 0.0666,
+      "logreg_auc": 0.555,
+      "knn_acc": 0.5087,
+      "silhouette": 0.0055,
+      "pca_components": 50,
+      "pca_variance_explained": 0.8599
+    }
+  },
+  "tsne_kl_divergence": 1.5913,
+  "avg_cross_stock_cosine": 0.9842,
+  "plots": {
+    "tsne_by_label": "eval_output\\plots\\tsne_by_label.png",
+    "tsne_by_stock": "eval_output\\plots\\tsne_by_stock.png",
+    "cosine_heatmap": "eval_output\\plots\\cosine_sim_matrix.png",
+    "class_distance": "eval_output\\plots\\class_dist_per_stock.png",
+    "probe_summary": "eval_output\\plots\\probe_summary.png"
+  }
+}

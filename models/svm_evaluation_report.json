@@ -1,0 +1,152 @@
+[
+  {
+    "stock": "PTT",
+    "model_type": "svm",
+    "n_test": 60,
+    "n_pca_components": 108.0,
+    "accuracy": 0.65,
+    "f1_score": 0.0,
+    "auc_roc": 0.547,
+    "precision_up": 0,
+    "recall_up": 0.0,
+    "confusion_matrix": [
+      [
+        39,
+        0
+      ],
+      [
+        21,
+        0
+      ]
+    ],
+    "classification_report": "              precision    recall  f1-score   support\n\n   Down/Flat       0.65      1.00      0.79        39\n          Up       0.00      0.00      0.00        21\n\n    accuracy                           0.65        60\n   macro avg       0.33      0.50      0.39        60\nweighted avg       0.42      0.65      0.51        60\n",
+    "train_acc": 0.3755,
+    "best_params": {
+      "C": 0.01,
+      "gamma": 0.01,
+      "kernel": "rbf"
+    },
+    "best_cv_auc": 0.5155,
+    "overfit_gap": -0.2745
+  },
+  {
+    "stock": "AOT",
+    "model_type": "svm",
+    "n_test": 55,
+    "n_pca_components": 101.0,
+    "accuracy": 0.4909,
+    "f1_score": 0.6,
+    "auc_roc": 0.4429,
+    "precision_up": 0.4565,
+    "recall_up": 0.875,
+    "confusion_matrix": [
+      [
+        6,
+        25
+      ],
+      [
+        3,
+        21
+      ]
+    ],
+    "classification_report": "              precision    recall  f1-score   support\n\n   Down/Flat       0.67      0.19      0.30        31\n          Up       0.46      0.88      0.60        24\n\n    accuracy                           0.49        55\n   macro avg       0.56      0.53      0.45        55\nweighted avg       0.57      0.49      0.43        55\n",
+    "train_acc": 0.9843,
+    "best_params": {
+      "C": 10.0,
+      "gamma": 0.001,
+      "kernel": "rbf"
+    },
+    "best_cv_auc": 0.5151,
+    "overfit_gap": 0.4934
+  },
+  {
+    "stock": "DELTA",
+    "model_type": "svm",
+    "n_test": 57,
+    "n_pca_components": 99.0,
+    "accuracy": 0.6491,
+    "f1_score": 0.7872,
+    "auc_roc": 0.4626,
+    "precision_up": 0.6607,
+    "recall_up": 0.9737,
+    "confusion_matrix": [
+      [
+        0,
+        19
+      ],
+      [
+        1,
+        37
+      ]
+    ],
+    "classification_report": "              precision    recall  f1-score   support\n\n   Down/Flat       0.00      0.00      0.00        19\n          Up       0.66      0.97      0.79        38\n\n    accuracy                           0.65        57\n   macro avg       0.33      0.49      0.39        57\nweighted avg       0.44      0.65      0.52        57\n",
+    "train_acc": 0.9924,
+    "best_params": {
+      "C": 1.0,
+      "gamma": "auto",
+      "kernel": "rbf"
+    },
+    "best_cv_auc": 0.5417,
+    "overfit_gap": 0.3433
+  },
+  {
+    "stock": "ADVANC",
+    "model_type": "svm",
+    "n_test": 55,
+    "n_pca_components": 98.0,
+    "accuracy": 0.6,
+    "f1_score": 0.7105,
+    "auc_roc": 0.5753,
+    "precision_up": 0.6,
+    "recall_up": 0.871,
+    "confusion_matrix": [
+      [
+        6,
+        18
+      ],
+      [
+        4,
+        27
+      ]
+    ],
+    "classification_report": "              precision    recall  f1-score   support\n\n   Down/Flat       0.60      0.25      0.35        24\n          Up       0.60      0.87      0.71        31\n\n    accuracy                           0.60        55\n   macro avg       0.60      0.56      0.53        55\nweighted avg       0.60      0.60      0.55        55\n",
+    "train_acc": 0.992,
+    "best_params": {
+      "C": 1.0,
+      "gamma": "auto",
+      "kernel": "rbf"
+    },
+    "best_cv_auc": 0.4738,
+    "overfit_gap": 0.392
+  },
+  {
+    "stock": "SCB",
+    "model_type": "svm",
+    "n_test": 53,
+    "n_pca_components": 95.0,
+    "accuracy": 0.4717,
+    "f1_score": 0.3333,
+    "auc_roc": 0.4857,
+    "precision_up": 0.4118,
+    "recall_up": 0.28,
+    "confusion_matrix": [
+      [
+        18,
+        10
+      ],
+      [
+        18,
+        7
+      ]
+    ],
+    "classification_report": "              precision    recall  f1-score   support\n\n   Down/Flat       0.50      0.64      0.56        28\n          Up       0.41      0.28      0.33        25\n\n    accuracy                           0.47        53\n   macro avg       0.46      0.46      0.45        53\nweighted avg       0.46      0.47      0.45        53\n",
+    "train_acc": 0.9835,
+    "best_params": {
+      "C": 10.0,
+      "gamma": "scale",
+      "kernel": "rbf"
+    },
+    "best_cv_auc": 0.5689,
+    "overfit_gap": 0.5118
+  }
+]

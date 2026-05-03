@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockNews AI - News</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#151722',
+                        card: '#1e2130',
+                        border: '#2a2e40',
+                        primary: '#10b981', 
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', 'Sarabun', sans-serif; background-color: #151722; color: #f8fafc; }
+        /* สไตล์พิเศษสำหรับปุ่ม Filter ที่ถูกเลือก */
+        .filter-btn.active { background-color: #10b981; color: white; border-color: transparent; }
+    </style>
+</head>
+<body class="min-h-screen bg-background">
+
+    <nav class="border-b border-border bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <span class="text-xl font-bold tracking-tight">StockNews AI</span>
+            </div>
+            <div class="hidden md:flex gap-6 font-medium text-sm">
+                <a href="/" class="text-gray-400 hover:text-white transition-colors">Dashboard</a>
+                <a href="/news" class="text-white">News</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div class="mb-8" data-aos="fade-down">
+            <h1 class="text-2xl font-bold tracking-tight mb-4">ข่าวทั้งหมด</h1>
+            
+            <div class="flex flex-wrap gap-2" id="filter-container">
+                <button class="filter-btn active px-4 py-1.5 rounded-md text-sm font-medium transition-colors" data-filter="all">ทั้งหมด</button>
+                <button class="filter-btn bg-card text-gray-300 border border-border hover:bg-gray-700 px-4 py-1.5 rounded-md text-sm font-medium transition-colors" data-filter="DELTA">DELTA</button>
+                <button class="filter-btn bg-card text-gray-300 border border-border hover:bg-gray-700 px-4 py-1.5 rounded-md text-sm font-medium transition-colors" data-filter="ADVANC">ADVANC</button>
+                <button class="filter-btn bg-card text-gray-300 border border-border hover:bg-gray-700 px-4 py-1.5 rounded-md text-sm font-medium transition-colors" data-filter="PTT">PTT</button>
+                <button class="filter-btn bg-card text-gray-300 border border-border hover:bg-gray-700 px-4 py-1.5 rounded-md text-sm font-medium transition-colors" data-filter="AOT">AOT</button>
+                <button class="filter-btn bg-card text-gray-300 border border-border hover:bg-gray-700 px-4 py-1.5 rounded-md text-sm font-medium transition-colors" data-filter="SCB">SCB</button>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-4" id="news-list">
+            {% for news in news_items %}
+            <a href="{{ news.link }}" target="_blank" class="news-item block rounded-xl border border-border bg-card p-5 hover:border-gray-500 transition-colors duration-300" data-symbol="{{ news.symbol }}" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
+                <div class="flex items-center gap-4 mb-3">
+                    <span class="bg-gray-700/50 text-gray-200 text-xs font-semibold px-2.5 py-1 rounded">{{ news.symbol }}</span>
+                    <span class="text-sm text-gray-400">{{ news.date }}</span>
+                </div>
+                <h2 class="text-lg font-bold text-gray-100 mb-1 leading-snug">{{ news.headline }}</h2>
+                <p class="text-sm text-gray-500">{{ news.source }}</p>
+            </a>
+            {% endfor %}
+            
+            {% if not news_items %}
+            <div class="text-center py-10 text-gray-500 bg-card rounded-xl border border-border">
+                ไม่พบข้อมูลข่าวในขณะนี้
+            </div>
+            {% endif %}
+        </div>
+
+    </main>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 600, once: true });
+
+        // ระบบกรองข่าว (Filter)
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const newsItems = document.querySelectorAll('.news-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // อัปเดตสไตล์ของปุ่มที่ถูกคลิก
+                filterBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-primary', 'text-white', 'border-transparent');
+                    b.classList.add('bg-card', 'text-gray-300', 'border-border');
+                });
+                btn.classList.remove('bg-card', 'text-gray-300', 'border-border');
+                btn.classList.add('active');
+
+                // กรองข่าว
+                const filterValue = btn.getAttribute('data-filter');
+                newsItems.forEach(item => {
+                    if (filterValue === 'all' || item.getAttribute('data-symbol') === filterValue) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
