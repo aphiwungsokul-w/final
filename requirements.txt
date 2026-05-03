@@ -8,7 +8,7 @@ jinja2==3.1.4
 python-multipart==0.0.9
 
 # ML / Deep Learning
-tensorflow-cpu==2.16.1    # ใช้ CPU version บน Render (ไม่มี GPU)
+tensorflow-cpu==2.21.0    # ใช้ CPU version บน Render (ไม่มี GPU)
 scikit-learn==1.5.0
 numpy==1.26.4
 pandas==2.2.2
