@@ -1,0 +1,38 @@
+# render.yaml — Render.com deployment configuration
+# วางไฟล์นี้ที่ root ของ repo
+#
+# Deploy:
+#   1. Push โค้ดขึ้น GitHub
+#   2. Render Dashboard → New → Web Service → เลือก repo
+#   3. Render จะอ่าน render.yaml นี้อัตโนมัติ
+
+services:
+  - type: web
+    name: stocknews-ai
+    env: python
+    region: singapore       # ใกล้ไทยที่สุด
+    plan: free              # free tier (512MB RAM, sleep after 15min inactive)
+
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+    # Environment variables (ตั้งใน Render Dashboard แทน hardcode)
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: TOKENIZERS_PARALLELISM
+        value: "false"
+      # ถ้าต้องการ secret key เพิ่ม:
+      # - key: CRON_SECRET
+      #   generateValue: true
+
+    # Health check
+    healthCheckPath: /api/predictions
+
+    # Disk (สำหรับเก็บ predictions.json และ models/)
+    # ⚠ Free tier ไม่มี persistent disk — ไฟล์หายเมื่อ restart
+    # ถ้าต้องการ persistent ให้ upgrade เป็น paid plan และ uncomment:
+    # disk:
+    #   name: stocknews-data
+    #   mountPath: /data
+    #   sizeGB: 1

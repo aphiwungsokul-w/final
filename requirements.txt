@@ -1,0 +1,28 @@
+# requirements.txt
+# ใช้สำหรับ Render deployment และ local development
+
+# Web framework
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+jinja2==3.1.4
+python-multipart==0.0.9
+
+# ML / Deep Learning
+tensorflow-cpu==2.16.1    # ใช้ CPU version บน Render (ไม่มี GPU)
+scikit-learn==1.5.0
+numpy==1.26.4
+pandas==2.2.2
+joblib==1.4.2
+
+# NLP / Embeddings
+transformers==4.41.2
+torch==2.3.0              # CPU only
+sentencepiece==0.2.0
+pythainlp==5.0.4
+
+# Data / News
+yfinance==0.2.40
+feedparser==6.0.11
+
+# Utilities
+tqdm==4.66.4
